@@ -1,0 +1,42 @@
+"""Playwright web browser toolkit."""
+from __future__ import annotations
+
+from typing import List, Type, cast
+
+from langchain_community.agent_toolkits import PlayWrightBrowserToolkit
+from langchain_community.tools.playwright.base import (
+    BaseBrowserTool,
+)
+from langchain_core.tools import BaseTool
+
+from src.tools.playwright.click import CustomClickTool
+from src.tools.playwright.current_web_page import CustomCurrentWebPageTool
+from src.tools.playwright.extract import CustomExtractTextTool
+from src.tools.playwright.extract_hyperlinks import CustomExtractHyperlinksTool
+from src.tools.playwright.get_elements import CustomGetElementsTool
+from src.tools.playwright.navigate import CustomNavigateTool
+from src.tools.playwright.navigate_back import CustomNavigateBackTool
+
+
+class CustomPlayWrightBrowserToolkit(PlayWrightBrowserToolkit):
+    """Toolkit for PlayWright browser tools."""
+
+    def get_tools(self) -> List[BaseTool]:
+        """Get the tools in the toolkit."""
+        tool_classes: List[Type[BaseBrowserTool]] = [
+            CustomClickTool,
+            CustomNavigateTool,
+            CustomNavigateBackTool,
+            CustomExtractTextTool,
+            CustomExtractHyperlinksTool,
+            CustomGetElementsTool,
+            CustomCurrentWebPageTool,
+        ]
+
+        tools = [
+            tool_cls.from_browser(
+                sync_browser=self.sync_browser, async_browser=self.async_browser
+            )
+            for tool_cls in tool_classes
+        ]
+        return cast(List[BaseTool], tools)
